@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Task List{% endblock %}
+{% block content %}
+<h2>My Tasks</h2>
+<a href="{% url 'task_create' %}" class="btn btn-primary mb-3">Create New Task</a>
+<form method="get" class="mb-3">
+    <div class="row">
+        <!-- Completion Status Filter -->
+        <div class="col-md-3">
+            <select name="status" class="form-control">
+                <option value="">All Status</option>
+                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="priority" class="form-control">
+                <option value="">All Priorities</option>
+                <option value="LOW" {% if priority_filter == 'LOW' %}selected{% endif %}>Low</option>
+                <option value="MEDIUM" {% if priority_filter == 'MEDIUM' %}selected{% endif %}>Medium</option>
+                <option value="HIGH" {% if priority_filter == 'HIGH' %}selected{% endif %}>High</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+
+        <div class="col-md-2">
+            <a href="{% url 'task_list' %}" class="btn btn-secondary w-100">Reset</a>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr {% if task.due_date < today and not task.is_completed %}class="table-danger"{% endif %}>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description|truncatewords:10 }}</td>
+            <td>{{ task.due_date }}</td>
+            <td>{{ task.get_priority_display }}</td>
+            <td>{{ task.is_completed|yesno:"Completed,Pending" }}</td>
+            <td>
+                <a href="{% url 'task_update' task.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'task_delete' task.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No tasks found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
