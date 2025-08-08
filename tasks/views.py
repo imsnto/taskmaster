@@ -15,11 +15,27 @@ class TaskListView(LoginRequiredMixin, ListView):
     context_object_name = 'tasks'
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+        queryset = Task.objects.filter(user=self.request.user)
 
+        status = self.request.GET.get('status')
+        priority = self.request.GET.get('priority')
+
+        if status == "completed":
+            queryset = queryset.filter(is_completed=True)
+        elif status == "pending":
+            queryset = queryset.filter(is_completed=False)
+
+        if priority:
+            queryset = queryset.filter(priority=priority)
+
+        return queryset
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['today'] = timezone.now().date()
+
+        context['status_filter'] = self.request.GET.get('status', '')
+        context['priority_filter'] = self.request.GET.get('priority', '')
         return context
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
