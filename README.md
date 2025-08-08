@@ -101,4 +101,4 @@ Below are screenshots showcasing the app's key functionalities:
   ![Login](/docs/_login.png)
 
 - **Register Page**:
-  ![Register](/docs/_register.png_)
+  ![Register](/docs/_register.png)
